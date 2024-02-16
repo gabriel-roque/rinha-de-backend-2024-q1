@@ -11,6 +11,7 @@ const transactionSchema = new Schema<Transaction.Model>(
       index: 'hashed',
       select: false,
     },
+    client_id: { type: 'number', required: true, select: false },
     valor: { type: 'number', required: true },
     tipo: { type: 'string', required: true },
     descricao: { type: 'string', required: true },

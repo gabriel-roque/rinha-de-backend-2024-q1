@@ -10,6 +10,7 @@ export namespace Transaction {
   };
 
   export type DTO = {
+    client_id: number;
     valor: number;
     tipo: Transaction.Type;
     descricao: string;
@@ -17,6 +18,7 @@ export namespace Transaction {
 
   export type Model = {
     id: string;
+    client_id: number;
     valor: number;
     tipo: Transaction.Type;
     descricao: string;

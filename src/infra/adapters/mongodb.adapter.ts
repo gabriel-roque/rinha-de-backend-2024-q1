@@ -55,15 +55,15 @@ export class MongodbAdapter<T> {
     await this.openConnect();
 
     const Document = this.getInstance();
-    const documents = await Document.find(
+    const documents = Document.find(
       params.filter,
       params.fields ? params.fields : { _id: 0 },
-      {
-        ...params.paginate,
-      },
+      { ...params.paginate },
     );
 
-    return documents;
+    if (params.sort) documents.sort(params.sort);
+
+    return await documents;
   }
 
   async update(data: T, filter: Repository.ParamsUpdate): Promise<T> {

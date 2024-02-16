@@ -2,11 +2,14 @@ export namespace Repository {
   export type ParamsList = {
     filter?: any;
     fields?: string[];
+    sort?: Record<string, SortTypes>;
     paginate?: {
       skip: number;
       limit: number;
     };
   };
+
+  export type SortTypes = 'asc' | 'ascending' | 'desc' | 'descending';
 
   export type ParamsGet = {
     filter?: any;

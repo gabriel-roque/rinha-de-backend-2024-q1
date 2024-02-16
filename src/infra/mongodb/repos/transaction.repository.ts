@@ -1,3 +1,4 @@
+import { Repository } from '@domain/contracts';
 import { ITransactionRepository } from '@domain/interfaces';
 import { Transaction } from '@domain/models';
 import { MongodbAdapter } from '@infra/adapters';
@@ -9,6 +10,10 @@ export class TransactionRepository implements ITransactionRepository {
 
   constructor(databaseAdapter: MongodbAdapter<Transaction.Model>) {
     this.databaseAdapter = databaseAdapter;
+  }
+
+  async list(params: Repository.ParamsList): Promise<Transaction.Model[]> {
+    return await this.databaseAdapter.list(params);
   }
 
   async create(data: Transaction.Model): Promise<Transaction.Model> {

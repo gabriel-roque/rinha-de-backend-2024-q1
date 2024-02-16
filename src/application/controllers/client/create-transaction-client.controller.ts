@@ -26,12 +26,13 @@ export class CreateTransactionClientController implements ControllerContract {
     request: Http.Request<Transaction.DTO>,
   ): Promise<Http.Response<Transaction.ReturnDTO>> {
     try {
-      const { body, params } = request;
-      const { valor, tipo } = body;
+      const { body: transaction, params } = request;
+      const { valor, tipo } = transaction;
       const { id } = params;
 
       let client = await this.getClientService.perform(Number(id));
       if (!client) return { statusCode: Http.StatusCode.NOT_FOUND };
+      transaction.client_id = client.id;
 
       if (
         tipo === Transaction.Type.Debit &&
@@ -50,14 +51,14 @@ export class CreateTransactionClientController implements ControllerContract {
         tipo === Transaction.Type.Debit &&
         client.saldo - valor >= -client.limite
       ) {
-        await this.createTransactionService.perform(body);
+        await this.createTransactionService.perform(transaction);
         client.saldo -= valor;
 
         client = await this.updateClientService.perform(client);
       }
 
       if (tipo === Transaction.Type.Credit) {
-        await this.createTransactionService.perform(body);
+        await this.createTransactionService.perform(transaction);
         client.saldo += valor;
 
         client = await this.updateClientService.perform(client);
