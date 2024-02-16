@@ -1,5 +1,9 @@
 import { AppError } from '@application/errors';
 import {
+  makeUpdateClientService,
+  UpdateClientService,
+} from '@application/services/clients';
+import {
   GetClientService,
   makeGetClientService,
 } from '@application/services/clients/get-client.service';
@@ -15,6 +19,7 @@ export class CreateTransactionClientController implements ControllerContract {
   constructor(
     private readonly createTransactionService: CreateTransactionService,
     private readonly getClientService: GetClientService,
+    private readonly updateClientService: UpdateClientService,
   ) {}
 
   async handle(
@@ -22,18 +27,47 @@ export class CreateTransactionClientController implements ControllerContract {
   ): Promise<Http.Response<Transaction.ReturnDTO>> {
     try {
       const { body, params } = request;
+      const { valor, tipo } = body;
       const { id } = params;
 
-      const clientExist = await this.getClientService.perform(Number(id));
-      if (!clientExist) return { statusCode: Http.StatusCode.NOT_FOUND };
+      let client = await this.getClientService.perform(Number(id));
+      if (!client) return { statusCode: Http.StatusCode.NOT_FOUND };
 
-      await this.createTransactionService.perform(body);
+      if (
+        tipo === Transaction.Type.Debit &&
+        client.saldo - valor < -client.limite
+      ) {
+        return {
+          statusCode: Http.StatusCode.UNPROCESSABLE_CONTENT,
+          data: {
+            limite: client.limite,
+            saldo: client.saldo,
+          },
+        };
+      }
+
+      if (
+        tipo === Transaction.Type.Debit &&
+        client.saldo - valor >= -client.limite
+      ) {
+        await this.createTransactionService.perform(body);
+        client.saldo -= valor;
+
+        client = await this.updateClientService.perform(client);
+      }
+
+      if (tipo === Transaction.Type.Credit) {
+        await this.createTransactionService.perform(body);
+        client.saldo += valor;
+
+        client = await this.updateClientService.perform(client);
+      }
 
       return {
         statusCode: Http.StatusCode.OK,
         data: {
-          limite: 0,
-          saldo: 0,
+          limite: client.limite,
+          saldo: client.saldo,
         },
       };
     } catch (e: any) {
@@ -53,5 +87,6 @@ export const makeCreateTransactionClientController =
     return new CreateTransactionClientController(
       makeCreateTransactionService(),
       makeGetClientService(),
+      makeUpdateClientService(),
     );
   };

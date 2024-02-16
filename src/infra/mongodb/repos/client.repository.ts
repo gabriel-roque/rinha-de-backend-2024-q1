@@ -11,6 +11,17 @@ export class ClientRepository implements IClientRepository {
   constructor(databaseAdapter: MongodbAdapter<Client.Model>) {
     this.databaseAdapter = databaseAdapter;
   }
+  async update(
+    data: Client.Model,
+    { filter }: Repository.ParamsUpdate,
+  ): Promise<Client.Model> {
+    try {
+      await this.databaseAdapter.update(data, filter);
+      return await this.get({ filter });
+    } catch (e) {
+      throw e;
+    }
+  }
 
   async get(params: Repository.ParamsGet): Promise<Client.Model> {
     try {
