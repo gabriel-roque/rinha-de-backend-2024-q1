@@ -1,5 +1,11 @@
-import { makeCreateTransactionClientController } from '@application/controllers/client';
-import { createTransactionValidator } from '@application/controllers/client/validators';
+import {
+  makeCreateTransactionClientController,
+  makeGetExtractClientController,
+} from '@application/controllers/client';
+import {
+  createTransactionValidator,
+  getExtractClientValidator,
+} from '@application/controllers/client/validators';
 import { Http, ResourceMapper } from '@main/interfaces';
 
 const clientsRoutes: ResourceMapper[] = [
@@ -8,6 +14,12 @@ const clientsRoutes: ResourceMapper[] = [
     method: Http.Methods.post,
     validators: [createTransactionValidator],
     controller: makeCreateTransactionClientController(),
+  },
+  {
+    endPoint: '/clientes/:id/extrato',
+    method: Http.Methods.get,
+    validators: [getExtractClientValidator],
+    controller: makeGetExtractClientController(),
   },
 ];
 
