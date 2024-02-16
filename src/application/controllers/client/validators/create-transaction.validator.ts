@@ -9,7 +9,7 @@ const params = Yup.object().shape({
 });
 
 const body = Yup.object().shape({
-  valor: Yup.number().positive().required(),
+  valor: Yup.number().integer().positive().required(),
   tipo: Yup.string().oneOf(['d', 'c']).required(),
   descricao: Yup.string().min(1).max(10).required(),
 });
@@ -31,7 +31,7 @@ export class CreateTransactionValidator implements ValidatorContract {
       throw new AppError({
         message: 'Validation failed',
         category: 'FAILED_IN_CREATE_TRANSACTION_VALIDATOR',
-        status: Http.StatusCode.BAD_REQUEST,
+        status: Http.StatusCode.UNPROCESSABLE_CONTENT,
         messages: e,
       });
     }

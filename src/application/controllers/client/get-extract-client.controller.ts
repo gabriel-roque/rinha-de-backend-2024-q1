@@ -27,8 +27,6 @@ export class GetExtractClientController implements ControllerContract {
       const client = await this.getClientService.perform(Number(id));
       if (!client) return { statusCode: Http.StatusCode.NOT_FOUND };
 
-      // TODO: Filter da transaction client
-
       const transactions = await this.listTransactionsService.perform({
         filter: { client_id: client.id },
         paginate: { limit: 10, skip: 0 },

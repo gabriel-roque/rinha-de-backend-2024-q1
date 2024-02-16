@@ -20,7 +20,7 @@ export class GetExtractClientValidator implements ValidatorContract {
       throw new AppError({
         message: 'Validation failed',
         category: 'FAILED_IN_GET_EXTRACT_CLIENT_VALIDATOR',
-        status: Http.StatusCode.BAD_REQUEST,
+        status: Http.StatusCode.UNPROCESSABLE_CONTENT,
         messages: e,
       });
     }
