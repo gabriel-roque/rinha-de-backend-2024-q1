@@ -3,7 +3,7 @@ import { SeedClientsUseCase } from '@domain/use-cases/client.usecase';
 import { makeClientRepository } from '@infra/mongodb/repos';
 import { clientsSeeds } from '@infra/mongodb/seeds';
 
-export class SeedClientsUseCaseService implements SeedClientsUseCase {
+export class SeedClientsService implements SeedClientsUseCase {
   constructor(private readonly clientRepository: IClientRepository) {}
 
   async perform(): Promise<void> {
@@ -20,6 +20,6 @@ export class SeedClientsUseCaseService implements SeedClientsUseCase {
 }
 
 /* istanbul ignore next */
-export const makeSeedClientService = (): SeedClientsUseCaseService => {
-  return new SeedClientsUseCaseService(makeClientRepository());
+export const makeSeedClientService = (): SeedClientsService => {
+  return new SeedClientsService(makeClientRepository());
 };
