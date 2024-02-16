@@ -1,4 +1,7 @@
-export type Client = {
-  id: number;
-  limite: number;
-};
+export namespace Client {
+  export type Model = {
+    id: number;
+    limite: number;
+    saldo: number;
+  };
+}
