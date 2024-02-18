@@ -21,8 +21,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.45'
-          memory: '200MB'
+          cpus: '0.50'
+          memory: '100MB'
 
   api02:
     <<: *api
@@ -49,7 +49,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.15'
+          cpus: '0.10'
           memory: '10MB'
 
   db:
@@ -62,11 +62,11 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=rinha
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: '0.45'
-    #       memory: '140MB'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.40'
+          memory: '340MB'
 networks:
   default:
     driver: bridge
