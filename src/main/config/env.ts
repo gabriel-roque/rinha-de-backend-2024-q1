@@ -3,7 +3,6 @@ dotenv.config();
 
 export const env = {
   app: {
-    domain: process.env.DOMAIN || 'http://localhost',
     port: process.env.PORT || 3000,
     runtime: process.env.NODE_ENV,
   },
