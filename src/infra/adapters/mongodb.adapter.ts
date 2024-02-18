@@ -58,11 +58,27 @@ export class MongodbAdapter<T> {
   async get(params: Repository.ParamsGet): Promise<T> {
     await this.openConnect();
 
-    const Document = this.getInstance();
-    const document = await Document.findOne(
-      params.filter,
-      params.fields ? params.fields : { _id: 0 },
-    );
+    const session = await startSession();
+    let document;
+
+    try {
+      await session.withTransaction(
+        async () => {
+          const Document = this.getInstance();
+          document = await Document.findOne(
+            params.filter,
+            params.fields ? params.fields : { _id: 0 },
+          );
+        },
+        {
+          readPreference: 'primary',
+          readConcern: { level: 'local' },
+          writeConcern: { w: 'majority' },
+        },
+      );
+    } finally {
+      await session.endSession();
+    }
 
     return document as T;
   }
@@ -85,8 +101,23 @@ export class MongodbAdapter<T> {
   async update(data: T, filter: Repository.ParamsUpdate): Promise<T> {
     await this.openConnect();
 
-    const Document = this.getInstance();
-    await Document.updateOne(filter, data as Record<string, unknown>);
+    const session = await startSession();
+
+    try {
+      await session.withTransaction(
+        async () => {
+          const Document = this.getInstance();
+          await Document.updateOne(filter, data as Record<string, unknown>);
+        },
+        {
+          readPreference: 'primary',
+          readConcern: { level: 'local' },
+          writeConcern: { w: 'majority' },
+        },
+      );
+    } finally {
+      await session.endSession();
+    }
 
     return await this.get(filter);
   }
