@@ -48,7 +48,7 @@ export class GetExtractClientController implements ControllerContract {
       throw new AppError({
         message: 'Failed in get extract client',
         category: 'FAILED_EXTRACT_CLIENT',
-        status: Http.StatusCode.BAD_REQUEST,
+        status: Http.StatusCode.UNPROCESSABLE_CONTENT,
         messages: e.message,
       });
     }

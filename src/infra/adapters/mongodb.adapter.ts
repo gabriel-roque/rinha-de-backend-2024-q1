@@ -1,6 +1,6 @@
 import { Repository } from '@domain/contracts';
 import { env } from '@main/config/env';
-import { connect, Model, model, Schema } from 'mongoose';
+import { connect, Model, model, Schema, startSession } from 'mongoose';
 
 export class MongodbAdapter<T> {
   private schema: Schema<T>;
@@ -25,11 +25,27 @@ export class MongodbAdapter<T> {
   async create(data: T): Promise<T> {
     await this.openConnect();
 
-    const Document = this.getInstance();
-    const document = new Document(data);
-    await document.save();
+    const session = await startSession();
+    let document;
 
-    return document;
+    try {
+      await session.withTransaction(
+        async () => {
+          const Document = this.getInstance();
+          document = new Document(data);
+          await document.save();
+        },
+        {
+          readPreference: 'primary',
+          readConcern: { level: 'local' },
+          writeConcern: { w: 'majority' },
+        },
+      );
+    } finally {
+      await session.endSession();
+    }
+
+    return document as T;
   }
 
   async createBulk(data: T[]): Promise<void> {

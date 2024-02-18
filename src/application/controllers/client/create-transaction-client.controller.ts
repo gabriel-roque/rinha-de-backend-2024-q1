@@ -75,7 +75,7 @@ export class CreateTransactionClientController implements ControllerContract {
       throw new AppError({
         message: 'Failed in create transaction',
         category: 'FAILED_CREATE_TRANSACTION',
-        status: Http.StatusCode.BAD_REQUEST,
+        status: Http.StatusCode.UNPROCESSABLE_CONTENT,
         messages: e.message,
       });
     }
