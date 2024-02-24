@@ -1,7 +1,0 @@
-node_modules
-dist
-coverage
-jest.config.ts
-jest-setup-file.ts
-jest-set-env-vars.ts
-data

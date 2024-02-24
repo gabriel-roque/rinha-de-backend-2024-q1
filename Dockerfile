@@ -1,12 +1,14 @@
-FROM node:16.15.0-alpine
 
-WORKDIR /api
+FROM node:20-alpine AS base
 
-COPY ./ /api
+WORKDIR /usr/src/app
 
-RUN sh -c 'npm install'
-RUN sh -c 'npm run build'
+COPY package*.json ./
+
+RUN npm install
+COPY . .
+RUN npm run build
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+CMD ["npm", "run", "start:prod"]

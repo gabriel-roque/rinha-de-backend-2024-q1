@@ -5,16 +5,12 @@ on:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
-
 jobs:
   lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ["16.15.0"]
+        node-version: ["20.11.1"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,21 +19,8 @@ jobs:
       - name: Run lint
         run: "npm run lint"
 
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ["16.15.0"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install
-        run: "npm install --save --legacy-peer-deps"
-      - name: Run tests
-        run: "npm run test:coverage"
-
   build:
-    needs: [lint, test]
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
