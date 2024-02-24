@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Pool } from 'pg';
 
 import { ExtractService, TransactionService } from './services';
 import { ExtractController, TransactionController } from './controllers';
+import { RequestMiddleware } from './middlewares';
 
 @Module({
   imports: [
@@ -22,4 +23,8 @@ import { ExtractController, TransactionController } from './controllers';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestMiddleware).forRoutes('*');
+  }
+}
