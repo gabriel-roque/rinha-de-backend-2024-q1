@@ -1,8 +1,8 @@
 export namespace Balance {
   export type Model = {
     id: number;
-    customer_id: number;
+    client_id: number;
     balance: number;
-    account_limit?: number;
+    client_limit?: number;
   };
 }

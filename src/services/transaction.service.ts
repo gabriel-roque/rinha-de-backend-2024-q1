@@ -24,10 +24,10 @@ export class TransactionService {
         rows: [balanceComputed],
       } = await db.query<Balance.Model>(
         `
-          SELECT b.id, b.customer_id, b.balance, c.account_limit
+          SELECT b.id, b.client_id, b.balance, c.client_limit
           FROM balances b
-          INNER JOIN customers c ON b.customer_id = c.id
-          WHERE customer_id = $1
+          INNER JOIN clients c ON b.client_id = c.id
+          WHERE client_id = $1
           FOR UPDATE
           `,
         [clientId],
@@ -42,18 +42,18 @@ export class TransactionService {
       if (transaction.tipo === Transaction.Type.DEBIT)
         balance -= transaction.valor;
 
-      if (balanceComputed.account_limit + balance < 0) {
+      if (balanceComputed?.client_limit + balance < 0) {
         throw new UnprocessableEntityException('client not have limit');
       }
 
       await db.query(
         `UPDATE balances
-         SET balance = $1 WHERE customer_id = $2`,
+         SET balance = $1 WHERE client_id = $2`,
         [balance, clientId],
       );
 
       await db.query(
-        `INSERT INTO transactions (customer_id, amount, type, description, created_at)
+        `INSERT INTO transactions (client_id, amount, type, description, created_at)
          VALUES ($1, $2, $3, $4, $5)`,
         [
           clientId,
@@ -67,7 +67,7 @@ export class TransactionService {
       await db.query('COMMIT');
 
       return {
-        limite: balanceComputed.account_limit,
+        limite: balanceComputed.client_limit,
         saldo: balance,
       };
     } catch (error) {

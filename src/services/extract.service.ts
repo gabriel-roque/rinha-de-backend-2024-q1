@@ -9,28 +9,24 @@ export class ExtractService {
 
   async getExtractClient(clientId: number): Promise<ExtractDTO.Response> {
     const {
-      rows: [customer],
+      rows: [client],
     } = await this.database.query<Client.Model>(
       `
-        SELECT c.id, c.name, c.account_limit, s.balance AS balance
-        FROM customers c
-        INNER JOIN balances s ON c.id = s.customer_id
+        SELECT c.id, c.name, c.client_limit, s.balance AS balance
+        FROM clients c
+        INNER JOIN balances s ON c.id = s.client_id
         WHERE c.id = $1
       `,
       [clientId],
     );
 
-    if (!customer) throw new NotFoundException('Client not found');
+    if (!client) throw new NotFoundException('Client not found');
 
     const { rows: transactions } = await this.database.query<Transaction.Model>(
       `
-        SELECT
-          amount,
-          type,
-          description,
-          created_at
+        SELECT amount, type, description, created_at
         FROM transactions
-        WHERE customer_id = $1
+        WHERE client_id = $1
         ORDER BY created_at DESC
         LIMIT 10
         `,
@@ -39,9 +35,9 @@ export class ExtractService {
 
     return {
       saldo: {
-        total: customer.balance,
+        total: client.balance,
         data_extrato: new Date().toISOString(),
-        limite: customer.account_limit,
+        limite: client.client_limit,
       },
       ultimas_transacoes: transactions.map((trx) => ({
         valor: trx.amount,
